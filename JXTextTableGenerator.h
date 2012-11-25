@@ -55,5 +55,8 @@
 - (NSMutableAttributedString *)attributedStringForCSVArray:(NSArray *)rowColArray
 										  tableHeaderIndex:(NSUInteger)headerIndex;
 
+- (NSMutableAttributedString *)attributedStringForCSVArray:(NSArray *)rowColArray
+										  tableHeaderIndex:(NSUInteger)headerIndex
+								  hasAttributedStringCells:(BOOL)hasAttributedStringCells;
 
 @end

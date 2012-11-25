@@ -102,11 +102,22 @@
 
 - (NSMutableAttributedString *)attributedStringForCSVArray:(NSArray *)rowColArray;
 {
-	return [self attributedStringForCSVArray:rowColArray tableHeaderIndex:NSNotFound];
+	return [self attributedStringForCSVArray:rowColArray
+							tableHeaderIndex:NSNotFound
+					hasAttributedStringCells:NO];
 }
 
 - (NSMutableAttributedString *)attributedStringForCSVArray:(NSArray *)rowColArray
 										  tableHeaderIndex:(NSUInteger)headerIndex;
+{
+	return [self attributedStringForCSVArray:rowColArray
+							tableHeaderIndex:headerIndex
+					hasAttributedStringCells:NO];
+}
+
+- (NSMutableAttributedString *)attributedStringForCSVArray:(NSArray *)rowColArray
+										  tableHeaderIndex:(NSUInteger)headerIndex
+								  hasAttributedStringCells:(BOOL)hasAttributedStringCells;
 {
 	// Should a row have a column count that differs from the *usual* column count in the table, it will be prepended to the result as tabbed text.
 	NSUInteger columnCount;
@@ -139,8 +150,12 @@
 		NSInteger colIndex = 0;
 		
 		if ((NSInteger)row.count != colCount) {
-			[preambleString appendString:[[row componentsJoinedByString:@"\t"]
-										  stringByAppendingString:@"\n"]];
+			if (hasAttributedStringCells) {
+			}
+			else {
+				[preambleString appendString:[[row componentsJoinedByString:@"\t"]
+											  stringByAppendingString:@"\n"]];
+			}
 			continue;
 		}
 		
@@ -148,14 +163,27 @@
 			currentAttributes = _headerAttributes;
 		}
 		
-		for (NSString *cellString in row) {
-			[tableString appendAttributedString:[self tableCellAttributedStringWithString:cellString
-																					table:table
-																					  row:rowIndex
-																				 rowCount:rowCount
-																				   column:colIndex
-																				 colCount:colCount
-																			   attributes:currentAttributes]];
+		for (id cellString in row) {
+			NSMutableAttributedString *tableCellString = nil;
+			if (hasAttributedStringCells) {
+				tableCellString = [self tableCellAttributedStringWithAttributedString:(NSAttributedString *)cellString
+																				table:table
+																				  row:rowIndex
+																			 rowCount:rowCount
+																			   column:colIndex
+																			 colCount:colCount];
+			}
+			else {
+				tableCellString = [self tableCellAttributedStringWithString:(NSString *)cellString
+																	  table:table
+																		row:rowIndex
+																   rowCount:rowCount
+																	 column:colIndex
+																   colCount:colCount
+																 attributes:currentAttributes];
+			}
+			
+			[tableString appendAttributedString:tableCellString];
 			
 			colIndex++;
 		}
@@ -176,15 +204,13 @@
 	return JX_AUTORELEASE(tableString);
 }
 
-- (NSMutableAttributedString *)tableCellAttributedStringWithString:(NSString *)string
-															 table:(NSTextTable *)table
-															   row:(NSInteger)row
-														  rowCount:(NSInteger)rowCount
-															column:(NSInteger)column
-														  colCount:(NSInteger)colCount
-														attributes:(NSDictionary *)basicAttributes
+- (NSTextTableBlock *)prepareTableBlockForTable:(NSTextTable *)table
+											row:(NSInteger)row
+									   rowCount:(NSInteger)rowCount
+										 column:(NSInteger)column
+									   colCount:(NSInteger)colCount
 {
-	NSTextTableBlock *tableBlock = [[NSTextTableBlock alloc] initWithTable:table
+    NSTextTableBlock *tableBlock = [[NSTextTableBlock alloc] initWithTable:table
 															   startingRow:row
 																   rowSpan:1
 															startingColumn:column
@@ -206,18 +232,68 @@
 			[tableBlock setWidth:_borderWidth type:NSTextBlockAbsoluteValueType forLayer:NSTextBlockBorder edge:NSMaxXEdge];
 		}
 	}
+    return tableBlock;
+}
+
+- (NSMutableAttributedString *)tableCellAttributedStringWithString:(NSString *)string
+															 table:(NSTextTable *)table
+															   row:(NSInteger)row
+														  rowCount:(NSInteger)rowCount
+															column:(NSInteger)column
+														  colCount:(NSInteger)colCount
+														attributes:(NSDictionary *)basicAttributes
+{
+	NSTextTableBlock *tableBlock = [self prepareTableBlockForTable:table
+															   row:row
+														  rowCount:rowCount
+															column:column
+														  colCount:colCount];
+	
+	NSArray *textBlocks = [NSArray arrayWithObjects:tableBlock, nil];
 	
 	NSMutableParagraphStyle *paragraphStyle = [_paragraphStyle mutableCopy];
-	[paragraphStyle setTextBlocks:[NSArray arrayWithObjects:tableBlock, nil]];
-	JX_RELEASE(tableBlock);
+	[paragraphStyle setTextBlocks:textBlocks];
 	
-	NSString *terminatedString = [string stringByAppendingString:@"\n"];
-	NSMutableAttributedString *cellString = [[NSMutableAttributedString alloc] initWithString:terminatedString
+	NSMutableAttributedString *cellString = [[NSMutableAttributedString alloc] initWithString:string
 																				   attributes:basicAttributes];
+	[cellString.mutableString appendString:@"\n"];
 	[cellString addAttribute:NSParagraphStyleAttributeName
 					   value:paragraphStyle
 					   range:NSMakeRange(0, [cellString length])];
 	JX_RELEASE(paragraphStyle);
+	
+	JX_RELEASE(tableBlock);
+
+	return JX_AUTORELEASE(cellString);
+}
+
+- (NSMutableAttributedString *)tableCellAttributedStringWithAttributedString:(NSAttributedString *)text
+																	   table:(NSTextTable *)table
+																		 row:(NSInteger)row
+																	rowCount:(NSInteger)rowCount
+																	  column:(NSInteger)column
+																	colCount:(NSInteger)colCount
+{
+	NSTextTableBlock *tableBlock = [self prepareTableBlockForTable:table
+															   row:row
+														  rowCount:rowCount
+															column:column
+														  colCount:colCount];
+	
+	NSArray *textBlocks = [NSArray arrayWithObjects:tableBlock, nil];
+	
+	// FIXME: enumerate NSParagraphStyleAttributeName attributes and change each one. 
+	NSMutableParagraphStyle *paragraphStyle = [_paragraphStyle mutableCopy];
+	[paragraphStyle setTextBlocks:textBlocks];
+	
+	NSMutableAttributedString *cellString = [[NSMutableAttributedString alloc] initWithAttributedString:text];
+	[cellString.mutableString appendString:@"\n"];
+	[cellString addAttribute:NSParagraphStyleAttributeName
+					   value:paragraphStyle
+					   range:NSMakeRange(0, [cellString length])];
+	JX_RELEASE(paragraphStyle);
+
+	JX_RELEASE(tableBlock);
 	
 	return JX_AUTORELEASE(cellString);
 }
