@@ -10,6 +10,8 @@
 #import <Foundation/Foundation.h>
 #import <AppKit/AppKit.h>
 
+#import "JXArcCompatibilityMacros.h"
+
 @interface JXTextTableGenerator : NSObject {
 	NSDictionary *_basicAttributes;
 	NSDictionary *_headerAttributes;
@@ -33,14 +35,14 @@
 	];
 #endif
 
-@property (nonatomic, readwrite, retain) NSDictionary *basicAttributes;
-@property (nonatomic, readwrite, retain) NSDictionary *headerAttributes;
+@property (nonatomic, readwrite, JX_STRONG) NSDictionary *basicAttributes;
+@property (nonatomic, readwrite, JX_STRONG) NSDictionary *headerAttributes;
 
-@property (nonatomic, readwrite, retain) NSParagraphStyle *paragraphStyle;
+@property (nonatomic, readwrite, JX_STRONG) NSParagraphStyle *paragraphStyle;
 @property (nonatomic, readwrite) CGFloat tablePadding;
 
 @property (nonatomic, readwrite) CGFloat borderWidth;
-@property (nonatomic, readwrite, retain) NSColor *borderColor;
+@property (nonatomic, readwrite, JX_STRONG) NSColor *borderColor;
 
 - (id)init;
 + (id)tableGenerator;

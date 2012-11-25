@@ -29,7 +29,7 @@
 {
 	id result = [(JXTextTableGenerator *)[[self class] alloc] initWithAttributes:nil];
 	
-	return [result autorelease];
+	return JX_AUTORELEASE(result);
 }
 
 - (id)initWithAttributes:(NSDictionary *)basicAttributes;
@@ -53,16 +53,16 @@
 			
 		}
 		
-		_paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] retain];
+		_paragraphStyle = JX_RETAIN([NSParagraphStyle defaultParagraphStyle]);
 		_tablePadding = 4.0;
 		
 		_borderWidth = 1.0;
-		_borderColor = [[NSColor colorWithCalibratedHue:0.00
+		_borderColor = JX_RETAIN([NSColor colorWithCalibratedHue:0.00
 											 saturation:0.00
 											 brightness:0.80
-												  alpha:1.00] retain]; // Numbers-style gray
+												  alpha:1.00]); // Numbers-style gray
 		
-		_basicAttributes = [basicAttributes retain];
+		_basicAttributes = JX_RETAIN(basicAttributes);
 		
 		// Derive headerAttributes. 
 		NSMutableDictionary *headerAttributes = [_basicAttributes mutableCopy];
@@ -74,7 +74,7 @@
 								 forKey:NSFontAttributeName];
 		}
 		
-		_headerAttributes = [headerAttributes retain];
+		_headerAttributes = JX_RETAIN(headerAttributes);
 	}
 	
 	return self;
@@ -84,9 +84,10 @@
 {
 	id result = [(JXTextTableGenerator *)[[self class] alloc] initWithAttributes:basicAttributes];
 	
-	return [result autorelease];
+	return JX_AUTORELEASE(result);
 }
 
+#if (JX_HAS_ARC == 0)
 - (void)dealloc
 {
     self.basicAttributes = nil;
@@ -96,6 +97,8 @@
 	
     [super dealloc];
 }
+#endif
+
 
 - (NSMutableAttributedString *)attributedStringForCSVArray:(NSArray *)rowColArray;
 {
@@ -167,10 +170,10 @@
 	[tableString insertAttributedString:preambleAttributedString
 								atIndex:0];
 	
-	[preambleAttributedString release];
-	[table release];
+	JX_RELEASE(preambleAttributedString);
+	JX_RELEASE(table);
 	
-	return [tableString autorelease];
+	return JX_AUTORELEASE(tableString);
 }
 
 - (NSMutableAttributedString *)tableCellAttributedStringWithString:(NSString *)string
@@ -206,7 +209,7 @@
 	
 	NSMutableParagraphStyle *paragraphStyle = [_paragraphStyle mutableCopy];
 	[paragraphStyle setTextBlocks:[NSArray arrayWithObjects:tableBlock, nil]];
-	[tableBlock release];
+	JX_RELEASE(tableBlock);
 	
 	NSString *terminatedString = [string stringByAppendingString:@"\n"];
 	NSMutableAttributedString *cellString = [[NSMutableAttributedString alloc] initWithString:terminatedString
@@ -214,9 +217,9 @@
 	[cellString addAttribute:NSParagraphStyleAttributeName
 					   value:paragraphStyle
 					   range:NSMakeRange(0, [cellString length])];
-	[paragraphStyle release];
+	JX_RELEASE(paragraphStyle);
 	
-	return [cellString autorelease];
+	return JX_AUTORELEASE(cellString);
 }
 
 @end
