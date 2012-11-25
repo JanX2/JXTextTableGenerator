@@ -8,6 +8,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <AppKit/AppKit.h>
 
 @interface JXTextTableGenerator : NSObject {
 	NSDictionary *_basicAttributes;
