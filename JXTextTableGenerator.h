@@ -44,11 +44,11 @@
 @property (nonatomic, readwrite) CGFloat borderWidth;
 @property (nonatomic, readwrite, JX_STRONG) NSColor *borderColor;
 
-- (id)init;
-+ (id)tableGenerator;
+- (instancetype)init;
++ (instancetype)tableGenerator;
 
-- (id)initWithAttributes:(NSDictionary *)basicAttributes;
-+ (id)tableGeneratorWithAttributes:(NSDictionary *)basicAttributes;
+- (instancetype)initWithAttributes:(NSDictionary *)basicAttributes;
++ (instancetype)tableGeneratorWithAttributes:(NSDictionary *)basicAttributes;
 
 - (NSMutableAttributedString *)attributedStringForCSVArray:(NSArray *)rowColArray;
 

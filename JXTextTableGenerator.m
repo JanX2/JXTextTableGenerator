@@ -20,19 +20,19 @@
 @synthesize borderWidth = _borderWidth;
 @synthesize borderColor = _borderColor;
 
-- (id)init;
+- (instancetype)init;
 {
 	return [self initWithAttributes:nil];
 }
 
-+ (id)tableGenerator;
++ (instancetype)tableGenerator;
 {
 	id result = [(JXTextTableGenerator *)[[self class] alloc] initWithAttributes:nil];
 	
 	return JX_AUTORELEASE(result);
 }
 
-- (id)initWithAttributes:(NSDictionary *)basicAttributes;
+- (instancetype)initWithAttributes:(NSDictionary *)basicAttributes;
 {
 	self = [super init];
 	
@@ -80,7 +80,7 @@
 	return self;
 }
 
-+ (id)tableGeneratorWithAttributes:(NSDictionary *)basicAttributes;
++ (instancetype)tableGeneratorWithAttributes:(NSDictionary *)basicAttributes;
 {
 	id result = [(JXTextTableGenerator *)[[self class] alloc] initWithAttributes:basicAttributes];
 	
