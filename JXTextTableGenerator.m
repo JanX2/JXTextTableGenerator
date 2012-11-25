@@ -11,25 +11,98 @@
 
 @implementation JXTextTableGenerator
 
+@synthesize basicAttributes = _basicAttributes;
+@synthesize headerAttributes = _headerAttributes;
+
+@synthesize tablePadding = _tablePadding;
+
+@synthesize borderWidth = _borderWidth;
+@synthesize borderColor = _borderColor;
+
+- (id)init;
+{
+	return [self initWithAttributes:nil];
+}
+
++ (id)tableGenerator;
+{
+	id result = [(JXTextTableGenerator *)[[self class] alloc] initWithAttributes:nil];
+	
+	return [result autorelease];
+}
+
+- (id)initWithAttributes:(NSDictionary *)basicAttributes;
+{
+	self = [super init];
+	
+	if (self) {
+		if (basicAttributes == nil) {
+			// Use defaults
+			CGFloat defaultSize = [NSFont systemFontSize];
+			
+			NSFont *font = [NSFont fontWithName:@"Helvetica"
+										   size:defaultSize];
+			
+			NSColor *textColor = [NSColor blackColor];
+			
+			basicAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
+							   font,		NSFontAttributeName,
+							   textColor,	NSForegroundColorAttributeName,
+							   nil];
+			
+		}
+		
+		_tablePadding = 4.0;
+		
+		_borderWidth = 1.0;
+		_borderColor = [[NSColor colorWithCalibratedHue:0.00
+											 saturation:0.00
+											 brightness:0.80
+												  alpha:1.00] retain]; // Numbers-style gray
+		
+		_basicAttributes = [basicAttributes retain];
+		
+		// Derive headerAttributes. 
+		NSMutableDictionary *headerAttributes = [_basicAttributes mutableCopy];
+		NSFont *font = [basicAttributes objectForKey:NSFontAttributeName];
+		NSFont *headerFont = [[NSFontManager sharedFontManager] convertFont:font
+																toHaveTrait:NSBoldFontMask];
+		if (headerFont != nil) {
+			[headerAttributes setObject:headerFont
+								 forKey:NSFontAttributeName];
+		}
+		
+		_headerAttributes = [headerAttributes retain];
+	}
+	
+	return self;
+}
+
++ (id)tableGeneratorWithAttributes:(NSDictionary *)basicAttributes;
+{
+	id result = [(JXTextTableGenerator *)[[self class] alloc] initWithAttributes:basicAttributes];
+	
+	return [result autorelease];
+}
+
+- (void)dealloc
+{
+    self.basicAttributes = nil;
+    self.headerAttributes = nil;
+	
+    self.borderColor = nil;
+	
+    [super dealloc];
+}
+
+- (NSMutableAttributedString *)attributedStringForCSVArray:(NSArray *)rowColArray;
+{
+	return [self attributedStringForCSVArray:rowColArray tableHeaderIndex:NSNotFound];
+}
+
 - (NSMutableAttributedString *)attributedStringForCSVArray:(NSArray *)rowColArray
 										  tableHeaderIndex:(NSUInteger)headerIndex;
 {
-	CGFloat defaultSize = [NSFont systemFontSize];
-    NSFont *font = [NSFont fontWithName:@"Helvetica" size:defaultSize];
-    NSColor *textColor = [NSColor blackColor];
-    NSMutableDictionary *basicAttributes = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-										   font,		NSFontAttributeName,
-										   textColor,	NSForegroundColorAttributeName,
-										   nil];
-	
-	NSMutableDictionary *headerAttributes = [[basicAttributes mutableCopy] autorelease];
-	NSFont *boldFont = [[NSFontManager sharedFontManager] convertFont:font
-														  toHaveTrait:NSBoldFontMask];
-	if (boldFont != nil) {
-		[headerAttributes setObject:boldFont
-							 forKey:NSFontAttributeName];
-	}
-	
 	// Should a row have a column count that differs from the *usual* column count in the table, it will be prepended to the result as tabbed text.
 	NSUInteger columnCount;
 	NSArray *headerRow = nil;
@@ -44,10 +117,10 @@
 	NSInteger rowCount = rowColArray.count;
 	NSInteger colCount = columnCount;
 	NSMutableAttributedString *tableString = [[NSMutableAttributedString alloc] initWithString:@""
-																					attributes:basicAttributes];
-
+																					attributes:_basicAttributes];
+	
 	NSMutableAttributedString *preambleAttributedString = [[NSMutableAttributedString alloc] initWithString:@""
-																					attributes:basicAttributes];
+																								 attributes:_basicAttributes];
 	NSMutableString *preambleString = preambleAttributedString.mutableString;
 	
 	NSTextTable *table = [[NSTextTable alloc] init];
@@ -55,18 +128,19 @@
 	
 	NSInteger rowIndex = 0;
 	
-	NSDictionary *currentAttributes = basicAttributes;
+	NSDictionary *currentAttributes = _basicAttributes;
 	
 	for (NSMutableArray *row in rowColArray) {
 		NSInteger colIndex = 0;
 		
 		if ((NSInteger)row.count != colCount) {
-			[preambleString appendString:[[row componentsJoinedByString:@"\t"] stringByAppendingString:@"\n"]];
+			[preambleString appendString:[[row componentsJoinedByString:@"\t"]
+										  stringByAppendingString:@"\n"]];
 			continue;
 		}
 		
 		if (row == headerRow) {
-			currentAttributes = headerAttributes;
+			currentAttributes = _headerAttributes;
 		}
 		
 		for (NSString *cellString in row) {
@@ -82,13 +156,14 @@
 		}
 		
 		if (row == headerRow) {
-			currentAttributes = basicAttributes;
+			currentAttributes = _basicAttributes;
 		}
 		
 		rowIndex++;
 	}
 	
-	[tableString insertAttributedString:preambleAttributedString atIndex:0];
+	[tableString insertAttributedString:preambleAttributedString
+								atIndex:0];
 	
 	[preambleAttributedString release];
 	[table release];
@@ -110,20 +185,20 @@
 															startingColumn:column
 																columnSpan:1];
 	
-	[tableBlock setWidth:4.0 type:NSTextBlockAbsoluteValueType forLayer:NSTextBlockPadding];
-
+	[tableBlock setWidth:_tablePadding type:NSTextBlockAbsoluteValueType forLayer:NSTextBlockPadding];
+	
 	{
-		[tableBlock setBorderColor:[NSColor colorWithCalibratedHue:0.00 saturation:0.00 brightness:0.80 alpha:1.00]]; // Numbers-style gray
+		[tableBlock setBorderColor:_borderColor];
 		
-		[tableBlock setWidth:1.0 type:NSTextBlockAbsoluteValueType forLayer:NSTextBlockBorder edge:NSMinYEdge];
-		[tableBlock setWidth:1.0 type:NSTextBlockAbsoluteValueType forLayer:NSTextBlockBorder edge:NSMinXEdge];
+		[tableBlock setWidth:_borderWidth type:NSTextBlockAbsoluteValueType forLayer:NSTextBlockBorder edge:NSMinYEdge];
+		[tableBlock setWidth:_borderWidth type:NSTextBlockAbsoluteValueType forLayer:NSTextBlockBorder edge:NSMinXEdge];
 		
 		if (row == (rowCount - 1)) {
-			[tableBlock setWidth:1.0 type:NSTextBlockAbsoluteValueType forLayer:NSTextBlockBorder edge:NSMaxYEdge];
+			[tableBlock setWidth:_borderWidth type:NSTextBlockAbsoluteValueType forLayer:NSTextBlockBorder edge:NSMaxYEdge];
 		}
 		
 		if (column == (colCount - 1)) {
-			[tableBlock setWidth:1.0 type:NSTextBlockAbsoluteValueType forLayer:NSTextBlockBorder edge:NSMaxXEdge];
+			[tableBlock setWidth:_borderWidth type:NSTextBlockAbsoluteValueType forLayer:NSTextBlockBorder edge:NSMaxXEdge];
 		}
 	}
 	

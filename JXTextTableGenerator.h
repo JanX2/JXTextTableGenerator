@@ -9,7 +9,15 @@
 
 #import <Foundation/Foundation.h>
 
-@interface JXTextTableGenerator : NSObject
+@interface JXTextTableGenerator : NSObject {
+	NSDictionary *_basicAttributes;
+	NSDictionary *_headerAttributes;
+	
+	CGFloat _tablePadding;
+
+	CGFloat _borderWidth;
+	NSColor *_borderColor;
+}
 
 // A CSVArray is an array of NSString arrays.
 // Each entry in this topmost array represents a row.
@@ -23,7 +31,24 @@
 	];
 #endif
 
+@property (nonatomic, readwrite, retain) NSDictionary *basicAttributes;
+@property (nonatomic, readwrite, retain) NSDictionary *headerAttributes;
+
+@property (nonatomic, readwrite) CGFloat tablePadding;
+
+@property (nonatomic, readwrite) CGFloat borderWidth;
+@property (nonatomic, readwrite, retain) NSColor *borderColor;
+
+- (id)init;
++ (id)tableGenerator;
+
+- (id)initWithAttributes:(NSDictionary *)basicAttributes;
++ (id)tableGeneratorWithAttributes:(NSDictionary *)basicAttributes;
+
+- (NSMutableAttributedString *)attributedStringForCSVArray:(NSArray *)rowColArray;
+
 - (NSMutableAttributedString *)attributedStringForCSVArray:(NSArray *)rowColArray
 										  tableHeaderIndex:(NSUInteger)headerIndex;
+
 
 @end
