@@ -14,6 +14,7 @@
 @synthesize basicAttributes = _basicAttributes;
 @synthesize headerAttributes = _headerAttributes;
 
+@synthesize paragraphStyle = _paragraphStyle;
 @synthesize tablePadding = _tablePadding;
 
 @synthesize borderWidth = _borderWidth;
@@ -52,6 +53,7 @@
 			
 		}
 		
+		_paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] retain];
 		_tablePadding = 4.0;
 		
 		_borderWidth = 1.0;
@@ -202,7 +204,7 @@
 		}
 	}
 	
-	NSMutableParagraphStyle *paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
+	NSMutableParagraphStyle *paragraphStyle = [_paragraphStyle mutableCopy];
 	[paragraphStyle setTextBlocks:[NSArray arrayWithObjects:tableBlock, nil]];
 	[tableBlock release];
 	

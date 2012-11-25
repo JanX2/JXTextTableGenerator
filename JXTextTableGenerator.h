@@ -13,6 +13,7 @@
 	NSDictionary *_basicAttributes;
 	NSDictionary *_headerAttributes;
 	
+	NSParagraphStyle *_paragraphStyle;
 	CGFloat _tablePadding;
 
 	CGFloat _borderWidth;
@@ -34,6 +35,7 @@
 @property (nonatomic, readwrite, retain) NSDictionary *basicAttributes;
 @property (nonatomic, readwrite, retain) NSDictionary *headerAttributes;
 
+@property (nonatomic, readwrite, retain) NSParagraphStyle *paragraphStyle;
 @property (nonatomic, readwrite) CGFloat tablePadding;
 
 @property (nonatomic, readwrite) CGFloat borderWidth;
