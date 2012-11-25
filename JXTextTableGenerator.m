@@ -280,19 +280,47 @@
 															column:column
 														  colCount:colCount];
 	
-	NSArray *textBlocks = [NSArray arrayWithObjects:tableBlock, nil];
-	
-	// FIXME: enumerate NSParagraphStyleAttributeName attributes and change each one. 
-	NSMutableParagraphStyle *paragraphStyle = [_paragraphStyle mutableCopy];
-	[paragraphStyle setTextBlocks:textBlocks];
 	
 	NSMutableAttributedString *cellString = [[NSMutableAttributedString alloc] initWithAttributedString:text];
 	[cellString.mutableString appendString:@"\n"];
-	[cellString addAttribute:NSParagraphStyleAttributeName
-					   value:paragraphStyle
-					   range:NSMakeRange(0, [cellString length])];
-	JX_RELEASE(paragraphStyle);
+	
+	__block BOOL paragraphStyleFound = NO;
 
+	
+	NSRange cellStringRange = NSMakeRange(0, cellString.length);
+
+	// Enumerate NSParagraphStyleAttributeName attributes and change each one.
+	[cellString enumerateAttribute:NSParagraphStyleAttributeName
+						   inRange:cellStringRange
+						   options:0
+						usingBlock:^(NSParagraphStyle *sourceParagraphStyle, NSRange range, BOOL *stop) {
+							NSMutableParagraphStyle *paragraphStyle;
+							if (sourceParagraphStyle != nil) {
+								paragraphStyle = [sourceParagraphStyle mutableCopy];
+							}
+							else {
+								paragraphStyle = [_paragraphStyle mutableCopy];
+							}
+							
+							NSArray *textBlocks = [paragraphStyle textBlocks];
+							if (textBlocks != nil) {
+								textBlocks = [textBlocks arrayByAddingObject:tableBlock];
+							}
+							else {
+								textBlocks = [NSArray arrayWithObject:tableBlock];
+							}
+							
+							[paragraphStyle setTextBlocks:textBlocks];
+							
+							[cellString addAttribute:NSParagraphStyleAttributeName
+											   value:paragraphStyle
+											   range:range];
+							
+							JX_RELEASE(paragraphStyle);
+							
+							paragraphStyleFound = YES;
+						}];
+	
 	JX_RELEASE(tableBlock);
 	
 	return JX_AUTORELEASE(cellString);
