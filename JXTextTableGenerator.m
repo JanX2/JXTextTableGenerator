@@ -103,23 +103,37 @@
 - (NSMutableAttributedString *)attributedStringForCSVArray:(NSArray *)rowColArray;
 {
 	return [self attributedStringForCSVArray:rowColArray
-							tableHeaderIndex:NSNotFound
-					hasAttributedStringCells:NO];
+							tableHeaderIndex:NSNotFound];
 }
 
 - (NSMutableAttributedString *)attributedStringForCSVArray:(NSArray *)rowColArray
 										  tableHeaderIndex:(NSUInteger)headerIndex;
 {
-	return [self attributedStringForCSVArray:rowColArray
-							tableHeaderIndex:headerIndex
-					hasAttributedStringCells:NO];
-}
+	NSMutableAttributedString *tableString = JX_AUTORELEASE([[NSMutableAttributedString alloc] initWithString:@""
+																								   attributes:_basicAttributes]);
+	
+	if (rowColArray.count == 0) {
+		return tableString;
+	}
+	
+	typedef NS_ENUM(NSInteger, JXTextTableGeneratorCellType) {
+		stringCellType,
+		attributedStringCellType
+	};
 
-- (NSMutableAttributedString *)attributedStringForCSVArray:(NSArray *)rowColArray
-										  tableHeaderIndex:(NSUInteger)headerIndex
-								  hasAttributedStringCells:(BOOL)hasAttributedStringCells;
-{
-	// Should a row have a column count that differs from the *usual* column count in the table, it will be prepended to the result as tabbed text.
+	JXTextTableGeneratorCellType cellType;
+	NSArray *firstRow = [rowColArray objectAtIndex:0];
+	id firstCell = [firstRow objectAtIndex:0];
+	if ([firstCell isKindOfClass:[NSString class]]) {
+		cellType = stringCellType;
+	}
+	else if ([firstCell isKindOfClass:[NSAttributedString class]]) {
+		cellType = attributedStringCellType;
+	}
+	else {
+		return tableString;
+	}
+	
 	NSUInteger columnCount;
 	NSArray *headerRow = nil;
 	if (headerIndex != NSNotFound) {
@@ -132,9 +146,6 @@
 	
 	NSInteger rowCount = rowColArray.count;
 	NSInteger colCount = columnCount;
-	NSMutableAttributedString *tableString = [[NSMutableAttributedString alloc] initWithString:@""
-																					attributes:_basicAttributes];
-	
 	NSMutableAttributedString *preambleAttributedString = [[NSMutableAttributedString alloc] initWithString:@""
 																								 attributes:_basicAttributes];
 	NSMutableString *preambleString = preambleAttributedString.mutableString;
@@ -150,7 +161,13 @@
 		NSInteger colIndex = 0;
 		
 		if ((NSInteger)row.count != colCount) {
-			if (hasAttributedStringCells) {
+			if (cellType == attributedStringCellType) {
+				for (NSAttributedString *cellString in row) {
+					[preambleAttributedString appendAttributedString:cellString];
+					[preambleString appendString:@"\t"];
+				}
+				
+				[preambleString appendString:@"\n"];
 			}
 			else {
 				[preambleString appendString:[[row componentsJoinedByString:@"\t"]
@@ -165,7 +182,7 @@
 		
 		for (id cellString in row) {
 			NSMutableAttributedString *tableCellString = nil;
-			if (hasAttributedStringCells) {
+			if (cellType == attributedStringCellType) {
 				tableCellString = [self tableCellAttributedStringWithAttributedString:(NSAttributedString *)cellString
 																				table:table
 																				  row:rowIndex
@@ -201,7 +218,7 @@
 	JX_RELEASE(preambleAttributedString);
 	JX_RELEASE(table);
 	
-	return JX_AUTORELEASE(tableString);
+	return tableString;
 }
 
 - (NSTextTableBlock *)prepareTableBlockForTable:(NSTextTable *)table

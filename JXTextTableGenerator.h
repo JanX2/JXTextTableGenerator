@@ -35,6 +35,9 @@
 	];
 #endif
 
+// Should a row have a column count that differs from the *usual* column count in the table,
+// it will be prepended to the result as tabbed text.
+
 @property (nonatomic, readwrite, JX_STRONG) NSDictionary *basicAttributes;
 @property (nonatomic, readwrite, JX_STRONG) NSDictionary *headerAttributes;
 
@@ -54,9 +57,5 @@
 
 - (NSMutableAttributedString *)attributedStringForCSVArray:(NSArray *)rowColArray
 										  tableHeaderIndex:(NSUInteger)headerIndex;
-
-- (NSMutableAttributedString *)attributedStringForCSVArray:(NSArray *)rowColArray
-										  tableHeaderIndex:(NSUInteger)headerIndex
-								  hasAttributedStringCells:(BOOL)hasAttributedStringCells;
 
 @end
