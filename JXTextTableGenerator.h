@@ -23,12 +23,15 @@
 	NSColor *_borderColor;
 }
 
-// A CSVArray is an array of NSString arrays.
+// A TableMatrix is an array of arrays.
+// Each subarray contains cell objects.
+// All subarrays need to contain a single object type:
+// either NSString or NSAttributedString.
 // Each entry in this topmost array represents a row.
-// Each of the strings in a row represents the columns for the row.
+// Each of the strings in a row represent a column of the row.
 #if 0
 	// Here is an example of such an array:
-    NSArray *sampleCSVArray = @[
+    NSArray *sampleTableMatrix = @[
 	@[@"Header 1", @"Header 2"],
 	@[@"cell 1", @"cell 2"],
 	@[@"second row", @"second row 2"]
@@ -53,9 +56,9 @@
 - (instancetype)initWithAttributes:(NSDictionary *)basicAttributes;
 + (instancetype)tableGeneratorWithAttributes:(NSDictionary *)basicAttributes;
 
-- (NSMutableAttributedString *)attributedStringForCSVArray:(NSArray *)rowColArray;
+- (NSMutableAttributedString *)attributedStringForTableMatrix:(NSArray *)rowColArray;
 
-- (NSMutableAttributedString *)attributedStringForCSVArray:(NSArray *)rowColArray
-										  tableHeaderIndex:(NSUInteger)headerIndex;
+- (NSMutableAttributedString *)attributedStringForTableMatrix:(NSArray *)rowColArray
+											 tableHeaderIndex:(NSUInteger)headerIndex;
 
 @end

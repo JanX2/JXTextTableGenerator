@@ -100,14 +100,14 @@
 #endif
 
 
-- (NSMutableAttributedString *)attributedStringForCSVArray:(NSArray *)rowColArray;
+- (NSMutableAttributedString *)attributedStringForTableMatrix:(NSArray *)rowColArray;
 {
-	return [self attributedStringForCSVArray:rowColArray
-							tableHeaderIndex:NSNotFound];
+	return [self attributedStringForTableMatrix:rowColArray
+							   tableHeaderIndex:NSNotFound];
 }
 
-- (NSMutableAttributedString *)attributedStringForCSVArray:(NSArray *)rowColArray
-										  tableHeaderIndex:(NSUInteger)headerIndex;
+- (NSMutableAttributedString *)attributedStringForTableMatrix:(NSArray *)rowColArray
+											 tableHeaderIndex:(NSUInteger)headerIndex;
 {
 	NSMutableAttributedString *tableString = JX_AUTORELEASE([[NSMutableAttributedString alloc] initWithString:@""
 																								   attributes:_basicAttributes]);
