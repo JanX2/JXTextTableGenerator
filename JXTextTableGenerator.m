@@ -302,6 +302,7 @@
 															column:column
 														  colCount:colCount];
 	
+	NSArray *tableBlockArray = [NSArray arrayWithObject:tableBlock];
 	
 	NSMutableAttributedString *cellString = [[NSMutableAttributedString alloc] initWithAttributedString:text];
 	if (_cellsNeedTerminators)  [cellString.mutableString appendString:@"\n"];
@@ -327,10 +328,12 @@
 							if (textBlocks != nil) {
 								// An NSParagraphStyle can have multiple table blocks in its textBlocks array.
 								// This will result in nested tables!
-								textBlocks = [textBlocks arrayByAddingObject:tableBlock];
+								// The table we are currently generating will be the new outermost table.
+								// So it needs to be the first in the textBlocks array.
+								textBlocks = [tableBlockArray arrayByAddingObjectsFromArray:textBlocks];
 							}
 							else {
-								textBlocks = [NSArray arrayWithObject:tableBlock];
+								textBlocks = tableBlockArray;
 							}
 							
 							[paragraphStyle setTextBlocks:textBlocks];
