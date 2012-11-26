@@ -20,6 +20,8 @@
 @synthesize borderWidth = _borderWidth;
 @synthesize borderColor = _borderColor;
 
+@synthesize cellsNeedTerminators = _cellsNeedTerminators;
+
 - (instancetype)init;
 {
 	return [self initWithAttributes:nil];
@@ -61,6 +63,8 @@
 											 saturation:0.00
 											 brightness:0.80
 												  alpha:1.00]); // Numbers-style gray
+		
+		_cellsNeedTerminators = YES;
 		
 		_basicAttributes = JX_RETAIN(basicAttributes);
 		
@@ -273,7 +277,8 @@
 	
 	NSMutableAttributedString *cellString = [[NSMutableAttributedString alloc] initWithString:string
 																				   attributes:basicAttributes];
-	[cellString.mutableString appendString:@"\n"];
+	if (_cellsNeedTerminators)  [cellString.mutableString appendString:@"\n"];
+	
 	[cellString addAttribute:NSParagraphStyleAttributeName
 					   value:paragraphStyle
 					   range:NSMakeRange(0, [cellString length])];
@@ -299,7 +304,7 @@
 	
 	
 	NSMutableAttributedString *cellString = [[NSMutableAttributedString alloc] initWithAttributedString:text];
-	[cellString.mutableString appendString:@"\n"];
+	if (_cellsNeedTerminators)  [cellString.mutableString appendString:@"\n"];
 	
 	__block BOOL paragraphStyleFound = NO;
 	

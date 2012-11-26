@@ -21,6 +21,8 @@
 
 	CGFloat _borderWidth;
 	NSColor *_borderColor;
+	
+	BOOL _cellsNeedTerminators;
 }
 
 // A TableMatrix is an array of arrays.
@@ -49,6 +51,13 @@
 
 @property (nonatomic, readwrite) CGFloat borderWidth;
 @property (nonatomic, readwrite, JX_STRONG) NSColor *borderColor;
+
+// Table cells need to end with a newline (\n).
+// Because of this, cellsNeedTerminators defaults to YES.
+// Thus every cell gets and extra newline at the end. 
+// If your TableMatrix already has these newlines,
+// you may suppress by setting this to NO. 
+@property (nonatomic, readwrite) BOOL cellsNeedTerminators;
 
 - (instancetype)init;
 + (instancetype)tableGenerator;
