@@ -321,6 +321,8 @@
 							
 							NSArray *textBlocks = [paragraphStyle textBlocks];
 							if (textBlocks != nil) {
+								// An NSParagraphStyle can have multiple table blocks in its textBlocks array.
+								// This will result in nested tables!
 								textBlocks = [textBlocks arrayByAddingObject:tableBlock];
 							}
 							else {
