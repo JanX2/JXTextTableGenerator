@@ -302,7 +302,6 @@
 	[cellString.mutableString appendString:@"\n"];
 	
 	__block BOOL paragraphStyleFound = NO;
-
 	
 	NSRange cellStringRange = NSMakeRange(0, cellString.length);
 
