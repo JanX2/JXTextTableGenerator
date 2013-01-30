@@ -253,7 +253,8 @@
 			[tableBlock setWidth:_borderWidth type:NSTextBlockAbsoluteValueType forLayer:NSTextBlockBorder edge:NSMaxXEdge];
 		}
 	}
-    return tableBlock;
+
+	return JX_AUTORELEASE(tableBlock);
 }
 
 - (NSMutableAttributedString *)tableCellAttributedStringWithString:(NSString *)string
