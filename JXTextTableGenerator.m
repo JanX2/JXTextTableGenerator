@@ -225,11 +225,11 @@
 	return tableString;
 }
 
-- (NSTextTableBlock *)prepareTableBlockForTable:(NSTextTable *)table
-											row:(NSInteger)row
-									   rowCount:(NSInteger)rowCount
-										 column:(NSInteger)column
-									   colCount:(NSInteger)colCount
+- (NSTextTableBlock *)newTableBlockForTable:(NSTextTable *)table
+										row:(NSInteger)row
+								   rowCount:(NSInteger)rowCount
+									 column:(NSInteger)column
+								   colCount:(NSInteger)colCount;
 {
     NSTextTableBlock *tableBlock = [[NSTextTableBlock alloc] initWithTable:table
 															   startingRow:row
@@ -254,7 +254,7 @@
 		}
 	}
 
-	return JX_AUTORELEASE(tableBlock);
+	return tableBlock;
 }
 
 - (NSMutableAttributedString *)tableCellAttributedStringWithString:(NSString *)string
@@ -265,11 +265,11 @@
 														  colCount:(NSInteger)colCount
 														attributes:(NSDictionary *)basicAttributes
 {
-	NSTextTableBlock *tableBlock = [self prepareTableBlockForTable:table
-															   row:row
-														  rowCount:rowCount
-															column:column
-														  colCount:colCount];
+	NSTextTableBlock *tableBlock = [self newTableBlockForTable:table
+														   row:row
+													  rowCount:rowCount
+														column:column
+													  colCount:colCount];
 	
 	NSArray *textBlocks = [NSArray arrayWithObjects:tableBlock, nil];
 	
@@ -297,11 +297,11 @@
 																	  column:(NSInteger)column
 																	colCount:(NSInteger)colCount
 {
-	NSTextTableBlock *tableBlock = [self prepareTableBlockForTable:table
-															   row:row
-														  rowCount:rowCount
-															column:column
-														  colCount:colCount];
+	NSTextTableBlock *tableBlock = [self newTableBlockForTable:table
+														   row:row
+													  rowCount:rowCount
+														column:column
+													  colCount:colCount];
 	
 	NSArray *tableBlockArray = [NSArray arrayWithObject:tableBlock];
 	
