@@ -48,10 +48,10 @@
 			
 			NSColor *textColor = [NSColor blackColor];
 			
-			basicAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
-							   font,		NSFontAttributeName,
-							   textColor,	NSForegroundColorAttributeName,
-							   nil];
+			basicAttributes = @{
+				NSFontAttributeName:			font,
+				NSForegroundColorAttributeName:	textColor,
+			};
 			
 		}
 		
@@ -70,12 +70,11 @@
 		
 		// Derive headerAttributes. 
 		NSMutableDictionary *headerAttributes = [_basicAttributes mutableCopy];
-		NSFont *font = [basicAttributes objectForKey:NSFontAttributeName];
+		NSFont *font = basicAttributes[NSFontAttributeName];
 		NSFont *headerFont = [[NSFontManager sharedFontManager] convertFont:font
 																toHaveTrait:NSBoldFontMask];
 		if (headerFont != nil) {
-			[headerAttributes setObject:headerFont
-								 forKey:NSFontAttributeName];
+			headerAttributes[NSFontAttributeName] = headerFont;
 		}
 		
 		_headerAttributes = JX_RETAIN(headerAttributes);
@@ -126,8 +125,8 @@
 	};
 
 	JXTextTableGeneratorCellType cellType;
-	NSArray *firstRow = [rowColArray objectAtIndex:0];
-	id firstCell = [firstRow objectAtIndex:0];
+	NSArray *firstRow = rowColArray[0];
+	id firstCell = firstRow[0];
 	if ([firstCell isKindOfClass:[NSString class]]) {
 		cellType = stringCellType;
 	}
@@ -141,7 +140,7 @@
 	NSUInteger columnCount;
 	NSArray *headerRow = nil;
 	if (headerIndex != NSNotFound) {
-		headerRow = [rowColArray objectAtIndex:headerIndex];
+		headerRow = rowColArray[headerIndex];
 		columnCount = headerRow.count;
 	}
 	else {
@@ -271,7 +270,7 @@
 														column:column
 													  colCount:colCount];
 	
-	NSArray *textBlocks = [NSArray arrayWithObjects:tableBlock, nil];
+	NSArray *textBlocks = @[tableBlock];
 	
 	NSMutableParagraphStyle *paragraphStyle = [_paragraphStyle mutableCopy];
 	[paragraphStyle setTextBlocks:textBlocks];
@@ -303,7 +302,7 @@
 														column:column
 													  colCount:colCount];
 	
-	NSArray *tableBlockArray = [NSArray arrayWithObject:tableBlock];
+	NSArray *tableBlockArray = @[tableBlock];
 	
 	NSMutableAttributedString *cellString = [[NSMutableAttributedString alloc] initWithAttributedString:text];
 	if (_cellsNeedTerminators)  [cellString.mutableString appendString:@"\n"];
