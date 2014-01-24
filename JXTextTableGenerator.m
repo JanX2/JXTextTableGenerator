@@ -163,7 +163,9 @@
 	for (NSMutableArray *row in rowColArray) {
 		NSInteger colIndex = 0;
 		
-		if ((NSInteger)row.count != colCount) {
+		NSUInteger thisColumnCount = row.count;
+		
+		if ((NSInteger)thisColumnCount != colCount) {
 			if (cellType == attributedStringCellType) {
 				for (NSAttributedString *cellString in row) {
 					[preambleAttributedString appendAttributedString:cellString];
