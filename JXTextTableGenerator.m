@@ -124,8 +124,18 @@
 		attributedStringCellType
 	};
 
+	NSUInteger columnCount;
+	NSArray *headerRow = nil;
+	if (headerIndex != NSNotFound) {
+		headerRow = rowColArray[headerIndex];
+		columnCount = headerRow.count;
+	}
+	else {
+		columnCount = [(NSArray *)[rowColArray lastObject] count];
+	}
+	
 	JXTextTableGeneratorCellType cellType;
-	NSArray *firstRow = rowColArray[0];
+	NSArray *firstRow = (headerRow != nil) ? headerRow : rowColArray[0];
 	id firstCell = firstRow[0];
 	if ([firstCell isKindOfClass:[NSString class]]) {
 		cellType = stringCellType;
@@ -135,16 +145,6 @@
 	}
 	else {
 		return tableString;
-	}
-	
-	NSUInteger columnCount;
-	NSArray *headerRow = nil;
-	if (headerIndex != NSNotFound) {
-		headerRow = rowColArray[headerIndex];
-		columnCount = headerRow.count;
-	}
-	else {
-		columnCount = [(NSArray *)[rowColArray lastObject] count];
 	}
 	
 	NSInteger rowCount = rowColArray.count;
