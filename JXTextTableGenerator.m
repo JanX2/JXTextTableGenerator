@@ -167,9 +167,16 @@
 		
 		if ((NSInteger)thisColumnCount != colCount) {
 			if (cellType == attributedStringCellType) {
+				NSUInteger thisColumnLastIndex = thisColumnCount - 1;
+				
+				NSUInteger preambleColumnIndex = 0;
 				for (NSAttributedString *cellString in row) {
 					[preambleAttributedString appendAttributedString:cellString];
-					[preambleString appendString:@"\t"];
+					if (preambleColumnIndex < thisColumnLastIndex) {
+						[preambleString appendString:@"\t"];
+					}
+					
+					preambleColumnIndex++;
 				}
 				
 				[preambleString appendString:@"\n"];
