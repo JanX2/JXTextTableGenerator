@@ -126,11 +126,14 @@
 
 	NSUInteger columnCount;
 	NSArray *headerRow = nil;
+	BOOL hasHeaderRow;
 	if (headerIndex != NSNotFound) {
+		hasHeaderRow = YES;
 		headerRow = rowColArray[headerIndex];
 		columnCount = headerRow.count;
 	}
 	else {
+		hasHeaderRow = NO;
 		columnCount = [(NSArray *)[rowColArray lastObject] count];
 	}
 	
@@ -165,7 +168,7 @@
 		
 		NSUInteger thisColumnCount = row.count;
 		
-		if ((NSInteger)thisColumnCount != colCount) {
+		if (hasHeaderRow && (rowIndex < (NSInteger)headerIndex)) {
 			if (cellType == attributedStringCellType) {
 				NSUInteger thisColumnLastIndex = thisColumnCount - 1;
 				
@@ -185,6 +188,8 @@
 				[preambleString appendString:[[row componentsJoinedByString:@"\t"]
 											  stringByAppendingString:@"\n"]];
 			}
+			
+			rowIndex++;
 			continue;
 		}
 		
