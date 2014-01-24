@@ -138,7 +138,7 @@
 	}
 	
 	JXTextTableGeneratorCellType cellType;
-	NSArray *firstRow = (headerRow != nil) ? headerRow : rowColArray[0];
+	NSArray *firstRow = hasHeaderRow ? headerRow : rowColArray[0];
 	id firstCell = firstRow[0];
 	if ([firstCell isKindOfClass:[NSString class]]) {
 		cellType = stringCellType;
